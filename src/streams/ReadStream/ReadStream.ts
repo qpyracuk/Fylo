@@ -1,27 +1,12 @@
-import * as fs from 'fs';
+//#region Import types
+import type { IReadStreamEventHandlers, IReadStreanEventType, IReadStreamEvents } from '../../@types/general';
+//#endregion
 
-import { EventEmitter } from 'events';
+//#region Imports
+import * as fs from 'node:fs';
+import { EventEmitter } from 'node:events';
 import { default as WriteStream } from '../WriteStream/WriteStream';
-
-type EventType = 'data' | 'end' | 'error' | 'close' | 'pause' | 'resume';
-
-interface ReadStreamEvents {
-	data: Buffer | string;
-	end: void;
-	error: Error;
-	close: void;
-	pause: void;
-	resume: void;
-}
-
-type EventHandlers = {
-	data: (chunk: Buffer | string) => void | Promise<void>;
-	end: () => void | Promise<void>;
-	error: (err: Error) => void | Promise<void>;
-	close: () => void | Promise<void>;
-	pause: () => void | Promise<void>;
-	resume: () => void | Promise<void>;
-};
+//#endregion
 
 /**
  * The `ReadStream` class provides a convenient interface for reading files as a stream.
@@ -94,7 +79,7 @@ export default class ReadStream extends EventEmitter {
 	/**
 	 * Handlers for various stream events.
 	 */
-	private handlers: { [K in EventType]: Array<EventHandlers[K]> } = {
+	private handlers: { [K in IReadStreanEventType]: Array<IReadStreamEventHandlers[K]> } = {
 		data: [],
 		end: [],
 		error: [],
@@ -446,7 +431,10 @@ export default class ReadStream extends EventEmitter {
 	 * @param event - The type of event whose handlers need to be executed.
 	 * @param arg - The argument that will be passed to the handlers.
 	 */
-	private async executeHandlers<K extends EventType>(event: K, arg?: Parameters<EventHandlers[K]>[0]): Promise<void> {
+	private async executeHandlers<K extends IReadStreanEventType>(
+		event: K,
+		arg?: Parameters<IReadStreamEventHandlers[K]>[0],
+	): Promise<void> {
 		if (this.handlers[event].length === 0) {
 			if (this.debug) {
 				this.log(`No handlers registered for event "${event}".`);
@@ -644,7 +632,7 @@ export default class ReadStream extends EventEmitter {
 	 * @param listener - The callback function that will be invoked when the event is emitted.
 	 * @returns A reference to the current instance for chaining.
 	 */
-	public on<K extends keyof ReadStreamEvents>(event: K, listener: (arg: ReadStreamEvents[K]) => void): this {
+	public on<K extends keyof IReadStreamEvents>(event: K, listener: (arg: IReadStreamEvents[K]) => void): this {
 		return super.on(event, listener);
 	}
 
@@ -709,7 +697,7 @@ export default class ReadStream extends EventEmitter {
 	 * @param listener - The callback function that was previously added as a listener.
 	 * @returns A reference to the current instance for chaining.
 	 */
-	public off<K extends keyof ReadStreamEvents>(event: K, listener: (arg: ReadStreamEvents[K]) => void): this {
+	public off<K extends keyof IReadStreamEvents>(event: K, listener: (arg: IReadStreamEvents[K]) => void): this {
 		return super.off(event, listener);
 	}
 

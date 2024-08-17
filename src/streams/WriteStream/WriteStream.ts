@@ -1,15 +1,11 @@
-import * as fs from 'fs';
-import { EventEmitter } from 'events';
+//#region Import types
+import type { IWriteStreamEvents } from '../../@types/general';
+//#endregion
 
-/**
- * Interface representing the possible events that the WriteStream can emit.
- */
-interface WriteStreamEvents {
-	finish: void;
-	error: Error;
-	close: void;
-	drain: void;
-}
+//#region Imports
+import * as fs from 'node:fs';
+import { EventEmitter } from 'events';
+//#endregion
 
 export default class WriteStream extends EventEmitter {
 	//#region Private Fields
@@ -222,7 +218,7 @@ export default class WriteStream extends EventEmitter {
 	 * @param listener - The callback function that will be invoked when the event is emitted.
 	 * @returns A reference to the current instance for chaining.
 	 */
-	public on<K extends keyof WriteStreamEvents>(event: K, listener: (arg: WriteStreamEvents[K]) => void): this {
+	public on<K extends keyof IWriteStreamEvents>(event: K, listener: (arg: IWriteStreamEvents[K]) => void): this {
 		return super.on(event, listener);
 	}
 
@@ -269,7 +265,7 @@ export default class WriteStream extends EventEmitter {
 	 * @param listener - The callback function that was previously added as a listener.
 	 * @returns A reference to the current instance for chaining.
 	 */
-	public off<K extends keyof WriteStreamEvents>(event: K, listener: (arg: WriteStreamEvents[K]) => void): this {
+	public off<K extends keyof IWriteStreamEvents>(event: K, listener: (arg: IWriteStreamEvents[K]) => void): this {
 		return super.off(event, listener);
 	}
 
