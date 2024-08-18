@@ -55,13 +55,13 @@ existence, read its contents, or create a new directory, Fylo provides simple an
 
 #### Checking File Existence
 
-The `fileExists` method allows you to instantly check whether a file exists at a given path. This is particularly useful
-for operations that require a preliminary check of file availability.
+The `exists` method allows you to instantly check whether a file exists at a given path. This is particularly useful for
+operations that require a preliminary check of file availability.
 
 Fylo provides two versions of this method:
 
-1. Asynchronous version `fileExists`.
-2. Synchronous version `fileExistsSync`.
+1. Asynchronous version `exists`.
+2. Synchronous version `existsSync`.
 
 **Parameters:**
 
@@ -74,18 +74,18 @@ Fylo provides two versions of this method:
 ##### TypeScript
 
 ```typescript
-import { fileExists } from 'fylo';
+import { exists } from 'fylo';
 
-const exists = await fileExists('/path/to/file.txt');
+const exists = await exists('/path/to/file.txt');
 console.log(`File exists: ${exists}`);
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { fileExists } = require('fylo');
+const { exists } = require('fylo');
 
-fileExists('/path/to/file.txt').then((exists) => {
+exists('/path/to/file.txt').then((exists) => {
 	console.log(`File exists: ${exists}`);
 });
 ```
@@ -93,18 +93,18 @@ fileExists('/path/to/file.txt').then((exists) => {
 ##### TypeScript
 
 ```typescript
-import { fileExistsSync } from 'fylo';
+import { existsSync } from 'fylo';
 
-const exists = fileExistsSync('/path/to/file.txt');
+const exists = existsSync('/path/to/file.txt');
 console.log(`File exists: ${exists}`);
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { fileExistsSync } = require('fylo');
+const { existsSync } = require('fylo');
 
-const exists = fileExistsSync('/path/to/file.txt');
+const exists = existsSync('/path/to/file.txt');
 console.log(`File exists: ${exists}`);
 ```
 
@@ -281,12 +281,12 @@ console.log('File renamed.');
 
 #### Deleting a File
 
-The `deleteFile` method allows you to quickly and safely delete an unnecessary file.
+The `unlink` method allows you to quickly and safely delete an unnecessary file.
 
 Fylo provides two versions of this method:
 
-1. Asynchronous version `deleteFile`.
-2. Synchronous version `deleteFileSync`.
+1. Asynchronous version `unlink`.
+2. Synchronous version `unlinkSync`.
 
 **Parameters:**
 
@@ -299,18 +299,18 @@ Fylo provides two versions of this method:
 ##### TypeScript
 
 ```typescript
-import { deleteFile } from 'fylo';
+import { unlink } from 'fylo';
 
-await deleteFile('/path/to/file.txt');
+await unlink('/path/to/file.txt');
 console.log('File deleted.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { deleteFile } = require('fylo');
+const { unlink } = require('fylo');
 
-deleteFile('/path/to/file.txt').then(() => {
+unlink('/path/to/file.txt').then(() => {
 	console.log('File deleted.');
 });
 ```
@@ -318,18 +318,18 @@ deleteFile('/path/to/file.txt').then(() => {
 ##### TypeScript
 
 ```typescript
-import { deleteFileSync } from 'fylo';
+import { unlinkSync } from 'fylo';
 
-deleteFileSync('/path/to/file.txt');
+unlinkSync('/path/to/file.txt');
 console.log('File deleted.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { deleteFileSync } = require('fylo');
+const { unlinkSync } = require('fylo');
 
-deleteFileSync('/path/to/file.txt');
+unlinkSync('/path/to/file.txt');
 console.log('File deleted.');
 ```
 
@@ -339,12 +339,12 @@ Fylo provides tools for simple and convenient directory management, including cr
 
 #### Creating a Directory
 
-The `createDirectory` method helps you quickly create a new directory, including all missing directories in the path.
+The `mkdir` method helps you quickly create a new directory, including all missing directories in the path.
 
 Fylo provides two versions of this method:
 
-1. Asynchronous version `createDirectory`.
-2. Synchronous version `createDirectorySync`.
+1. Asynchronous version `mkdir`.
+2. Synchronous version `mkdirSync`.
 
 **Parameters:**
 
@@ -360,18 +360,18 @@ Fylo provides two versions of this method:
 ##### TypeScript
 
 ```typescript
-import { createDirectory } from 'fylo';
+import { mkdir } from 'fylo';
 
-await createDirectory('/path/to/directory', { recursive: true, mode: 0o755 });
+await mkdir('/path/to/directory', { recursive: true, mode: 0o755 });
 console.log('Directory created.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { createDirectory } = require('fylo');
+const { mkdir } = require('fylo');
 
-createDirectory('/path/to/directory', { recursive: true, mode: 0o755 }).then(() => {
+mkdir('/path/to/directory', { recursive: true, mode: 0o755 }).then(() => {
 	console.log('Directory created.');
 });
 ```
@@ -379,29 +379,29 @@ createDirectory('/path/to/directory', { recursive: true, mode: 0o755 }).then(() 
 ##### TypeScript
 
 ```typescript
-import { createDirectorySync } from 'fylo';
+import { mkdirSync } from 'fylo';
 
-createDirectorySync('/path/to/directory', { recursive: true, mode: 0o755 });
+mkdirSync('/path/to/directory', { recursive: true, mode: 0o755 });
 console.log('Directory created.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { createDirectorySync } = require('fylo');
+const { mkdirSync } = require('fylo');
 
-createDirectorySync('/path/to/directory', { recursive: true, mode: 0o755 });
+mkdirSync('/path/to/directory', { recursive: true, mode: 0o755 });
 console.log('Directory created.');
 ```
 
 #### Deleting a Directory
 
-The `removeDirectory` method allows you to delete a directory along with all its contents.
+The `rmdir` method allows you to delete a directory along with all its contents.
 
 Fylo provides two versions of this method:
 
-1. Asynchronous version `removeDirectory`.
-2. Synchronous version `removeDirectorySync`.
+1. Asynchronous version `rmdir`.
+2. Synchronous version `rmdirSync`.
 
 **Parameters:**
 
@@ -414,18 +414,18 @@ Fylo provides two versions of this method:
 ##### TypeScript
 
 ```typescript
-import { removeDirectory } from 'fylo';
+import { rmdir } from 'fylo';
 
-await removeDirectory('/path/to/directory');
+await rmdir('/path/to/directory');
 console.log('Directory deleted.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { removeDirectory } = require('fylo');
+const { rmdir } = require('fylo');
 
-removeDirectory('/path/to/directory').then(() => {
+rmdir('/path/to/directory').then(() => {
 	console.log('Directory deleted.');
 });
 ```
@@ -433,30 +433,30 @@ removeDirectory('/path/to/directory').then(() => {
 ##### TypeScript
 
 ```typescript
-import { removeDirectorySync } from 'fylo';
+import { rmdirSync } from 'fylo';
 
-removeDirectorySync('/path/to/directory');
+rmdirSync('/path/to/directory');
 console.log('Directory deleted.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { removeDirectorySync } = require('fylo');
+const { rmdirSync } = require('fylo');
 
-removeDirectorySync('/path/to/directory');
+rmdirSync('/path/to/directory');
 console.log('Directory deleted.');
 ```
 
 #### Reading Directory Contents
 
-The `readDirectory` method returns a list of all files and subdirectories in a specified directory, making content
-management easier.
+The `readdir` method returns a list of all files and subdirectories in a specified directory, making content management
+easier.
 
 Fylo provides two versions of this method:
 
-1. Asynchronous version `readDirectory`.
-2. Synchronous version `readDirectorySync`.
+1. Asynchronous version `readdir`.
+2. Synchronous version `readdirSync`.
 
 **Parameters:**
 
@@ -469,18 +469,18 @@ Fylo provides two versions of this method:
 ##### TypeScript
 
 ```typescript
-import { readDirectory } from 'fylo';
+import { readdir } from 'fylo';
 
-const files = await readDirectory('/path/to/directory');
+const files = await readdir('/path/to/directory');
 console.log('Directory contents:', files);
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { readDirectory } = require('fylo');
+const { readdir } = require('fylo');
 
-readDirectory('/path/to/directory').then((files) => {
+readdir('/path/to/directory').then((files) => {
 	console.log('Directory contents:', files);
 });
 ```
@@ -488,29 +488,29 @@ readDirectory('/path/to/directory').then((files) => {
 ##### TypeScript
 
 ```typescript
-import { readDirectorySync } from 'fylo';
+import { readdirSync } from 'fylo';
 
-const files = readDirectorySync('/path/to/directory');
+const files = readdirSync('/path/to/directory');
 console.log('Directory contents:', files);
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { readDirectorySync } = require('fylo');
+const { readdirSync } = require('fylo');
 
-const files = readDirectorySync('/path/to/directory');
+const files = readdirSync('/path/to/directory');
 console.log('Directory contents:', files);
 ```
 
 #### Clearing a Directory
 
-The `clearDirectory` method deletes all contents of a directory, leaving the directory itself intact.
+The `cleardir` method deletes all contents of a directory, leaving the directory itself intact.
 
 Fylo provides two versions of this method:
 
-1. Asynchronous version `clearDirectory`.
-2. Synchronous version `clearDirectorySync`.
+1. Asynchronous version `cleardir`.
+2. Synchronous version `cleardirSync`.
 
 **Parameters:**
 
@@ -523,18 +523,18 @@ Fylo provides two versions of this method:
 ##### TypeScript
 
 ```typescript
-import { clearDirectory } from 'fylo';
+import { cleardir } from 'fylo';
 
-await clearDirectory('/path/to/directory');
+await cleardir('/path/to/directory');
 console.log('Directory cleared.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { clearDirectory } = require('fylo');
+const { cleardir } = require('fylo');
 
-clearDirectory('/path/to/directory').then(() => {
+cleardir('/path/to/directory').then(() => {
 	console.log('Directory cleared.');
 });
 ```
@@ -542,18 +542,18 @@ clearDirectory('/path/to/directory').then(() => {
 ##### TypeScript
 
 ```typescript
-import { clearDirectorySync } from 'fylo';
+import { cleardirSync } from 'fylo';
 
-clearDirectorySync('/path/to/directory');
+cleardirSync('/path/to/directory');
 console.log('Directory cleared.');
 ```
 
 ##### JavaScript (CommonJS)
 
 ```javascript
-const { clearDirectorySync } = require('fylo');
+const { cleardirSync } = require('fylo');
 
-clearDirectorySync('/path/to/directory');
+cleardirSync('/path/to/directory');
 console.log('Directory cleared.');
 ```
 
