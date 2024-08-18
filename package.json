@@ -1,6 +1,6 @@
 {
 	"name": "fylo",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Powerful TypeScript library for working with files, directories, and streams, extending the functionality of the fs module.",
 	"author": "Pobedinskiy David (qpyracuk)",
 	"license": "Apache-2.0",
