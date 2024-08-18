@@ -7,7 +7,7 @@ export default defineConfig({
 	splitting: true, // Разделение кода (для ESM)
 	sourcemap: true, // Генерация source maps
 	clean: true, // Очистка выходной директории перед сборкой
-	minify: 'terser', // Минификация с использованием Terser
+	minify: false, // Минификация с использованием Terser
 	treeshake: true, // Удаление неиспользуемого кода
 	target: 'es2017', // Целевая версия ECMAScript
 	outDir: 'dist', // Выходная директория

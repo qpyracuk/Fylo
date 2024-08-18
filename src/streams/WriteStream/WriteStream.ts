@@ -1,10 +1,11 @@
 //#region Import types
-import type { IWriteStreamEvents } from '../../@types/general';
+import type { IWriteStreamEvents, IWriteStreamOptions } from '../../@types/general';
 //#endregion
 
 //#region Imports
-import * as fs from 'node:fs';
+import * as fs from 'fs';
 import { EventEmitter } from 'events';
+import { allowedFlags, bufferEncodings } from '../../constants/genetal';
 //#endregion
 
 export default class WriteStream extends EventEmitter {
@@ -58,15 +59,12 @@ export default class WriteStream extends EventEmitter {
 	/**
 	 * Opens the stream for writing. This method must be called before any data can be written.
 	 *
-	 * @param options - Optional stream options, such as encoding and highWaterMark.
+	 * @param options - Optional stream options.
 	 * @param timeout - Optional timeout in milliseconds. If the stream doesn't open within this time, the promise will be rejected.
 	 * @returns A promise that resolves when the stream is successfully opened.
 	 * @throws Will reject the promise if the stream is already open or if the stream fails to open.
 	 */
-	public open(
-		options: { encoding?: BufferEncoding; highWaterMark?: number } = {},
-		timeout: number = 30000,
-	): Promise<void> {
+	public open(options: IWriteStreamOptions = {}, timeout: number = 30000): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			if (this.isOpen) {
 				return reject(new Error('Stream is already open.'));
@@ -74,9 +72,7 @@ export default class WriteStream extends EventEmitter {
 
 			this.log('Opening stream...');
 
-			if (options) {
-				this.validateStreamOptions(options);
-			}
+			this.validateStreamOptions(options);
 
 			this.stream = fs.createWriteStream(this.filePath, options);
 
@@ -279,12 +275,50 @@ export default class WriteStream extends EventEmitter {
 	 * @param options - The options to validate.
 	 * @throws Will throw an error if any of the options are invalid.
 	 */
-	private validateStreamOptions(options: { encoding?: BufferEncoding; highWaterMark?: number }) {
-		if (options.highWaterMark !== undefined && typeof options.highWaterMark !== 'number') {
-			throw new Error('Invalid highWaterMark value.');
+	private validateStreamOptions(options?: IWriteStreamOptions) {
+		if (typeof options === 'string') {
+			if (!bufferEncodings.has(options)) {
+				throw new Error(`Invalid encoding: ${options}. Allowed encodings are: ${[...bufferEncodings].join(', ')}.`);
+			}
+			return;
 		}
-		if (options.encoding !== undefined && typeof options.encoding !== 'string') {
-			throw new Error('Invalid encoding value.');
+
+		if (typeof options !== 'object' || options === null) {
+			throw new Error('Options must be a non-null object.');
+		}
+
+		if (options.flags !== undefined && !allowedFlags.has(options.flags)) {
+			throw new Error(`Invalid flag: ${options.flags}. Allowed flags are: ${[...allowedFlags].join(', ')}.`);
+		}
+
+		if (options.encoding !== undefined && !bufferEncodings.has(options.encoding)) {
+			throw new Error(
+				`Invalid encoding: ${options.encoding}. Allowed encodings are: ${[...bufferEncodings].join(', ')}.`,
+			);
+		}
+
+		if (options.fd !== undefined && !(typeof options.fd === 'number' || typeof options.fd === 'object')) {
+			throw new Error(`Invalid fd: ${String(options.fd)}. It must be a number or a FileHandle.`);
+		}
+
+		if (options.mode !== undefined && typeof options.mode !== 'number') {
+			throw new Error(`Invalid mode: ${String(options.mode)}. It must be a number.`);
+		}
+
+		if (options.autoClose !== undefined && typeof options.autoClose !== 'boolean') {
+			throw new Error(`Invalid autoClose: ${String(options.autoClose)}. It must be a boolean.`);
+		}
+
+		if (options.emitClose !== undefined && typeof options.emitClose !== 'boolean') {
+			throw new Error(`Invalid emitClose: ${String(options.emitClose)}. It must be a boolean.`);
+		}
+
+		if (options.start !== undefined && typeof options.start !== 'number') {
+			throw new Error(`Invalid start: ${String(options.start)}. It must be a number.`);
+		}
+
+		if (options.highWaterMark !== undefined && typeof options.highWaterMark !== 'number') {
+			throw new Error(`Invalid highWaterMark: ${String(options.highWaterMark)}. It must be a number.`);
 		}
 	}
 

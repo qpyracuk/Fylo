@@ -1,11 +1,12 @@
 //#region Import types
-import type { IReadStreamEventHandlers, IReadStreanEventType, IReadStreamEvents } from '../../@types/general';
+import type { IReadStreamEvents, IReadStreamOptions } from '../../@types/general';
 //#endregion
 
 //#region Imports
 import * as fs from 'node:fs';
 import { EventEmitter } from 'node:events';
 import { default as WriteStream } from '../WriteStream/WriteStream';
+import { allowedFlags, bufferEncodings } from '../../constants/genetal';
 //#endregion
 
 /**
@@ -77,18 +78,6 @@ export default class ReadStream extends EventEmitter {
 	private isFlowing: boolean = false;
 
 	/**
-	 * Handlers for various stream events.
-	 */
-	private handlers: { [K in IReadStreanEventType]: Array<IReadStreamEventHandlers[K]> } = {
-		data: [],
-		end: [],
-		error: [],
-		close: [],
-		pause: [],
-		resume: [],
-	};
-
-	/**
 	 * Flag for enabling debug mode. When enabled, additional logging will be performed.
 	 */
 	private debug: boolean;
@@ -121,15 +110,12 @@ export default class ReadStream extends EventEmitter {
 	/**
 	 * Opens the stream for reading the file. This method must be called before any data can be read.
 	 *
-	 * @param options - Optional stream options, such as encoding and highWaterMark.
+	 * @param options - Optional stream options.
 	 * @param timeout - Optional timeout in milliseconds. If the stream doesn't open within this time, the promise will be rejected.
 	 * @returns A promise that resolves when the stream is successfully opened.
 	 * @throws Will reject the promise if the stream is already open or if the stream fails to open.
 	 */
-	public open(
-		options: { encoding?: BufferEncoding; highWaterMark?: number } = {},
-		timeout: number = 30000,
-	): Promise<void> {
+	public open(options: IReadStreamOptions = {}, timeout: number = 30000): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			if (this.isOpen) {
 				return reject(new Error('Stream is already open.'));
@@ -319,12 +305,54 @@ export default class ReadStream extends EventEmitter {
 	 * @param options - The options to validate.
 	 * @throws Will throw an error if any of the options are invalid.
 	 */
-	private validateStreamOptions(options: { encoding?: BufferEncoding; highWaterMark?: number }) {
-		if (options.highWaterMark !== undefined && typeof options.highWaterMark !== 'number') {
-			throw new Error('Invalid highWaterMark value.');
+	private validateStreamOptions(options?: IReadStreamOptions) {
+		if (typeof options === 'string') {
+			if (!bufferEncodings.has(options)) {
+				throw new Error(`Invalid encoding: ${options}. Allowed encodings are: ${[...bufferEncodings].join(', ')}.`);
+			}
+			return;
 		}
-		if (options.encoding !== undefined && typeof options.encoding !== 'string') {
-			throw new Error('Invalid encoding value.');
+
+		if (typeof options !== 'object' || options === null) {
+			throw new Error('Options must be a non-null object.');
+		}
+
+		if (options.flags !== undefined && !allowedFlags.has(options.flags)) {
+			throw new Error(`Invalid flag: ${options.flags}. Allowed flags are: ${[...allowedFlags].join(', ')}.`);
+		}
+
+		if (options.encoding !== undefined && !bufferEncodings.has(options.encoding)) {
+			throw new Error(
+				`Invalid encoding: ${options.encoding}. Allowed encodings are: ${[...bufferEncodings].join(', ')}.`,
+			);
+		}
+
+		if (options.fd !== undefined && !(typeof options.fd === 'number' || typeof options.fd === 'object')) {
+			throw new Error(`Invalid fd: ${String(options.fd)}. It must be a number or a FileHandle.`);
+		}
+
+		if (options.mode !== undefined && typeof options.mode !== 'number') {
+			throw new Error(`Invalid mode: ${String(options.mode)}. It must be a number.`);
+		}
+
+		if (options.autoClose !== undefined && typeof options.autoClose !== 'boolean') {
+			throw new Error(`Invalid autoClose: ${String(options.autoClose)}. It must be a boolean.`);
+		}
+
+		if (options.emitClose !== undefined && typeof options.emitClose !== 'boolean') {
+			throw new Error(`Invalid emitClose: ${String(options.emitClose)}. It must be a boolean.`);
+		}
+
+		if (options.start !== undefined && typeof options.start !== 'number') {
+			throw new Error(`Invalid start: ${String(options.start)}. It must be a number.`);
+		}
+
+		if (options.end !== undefined && typeof options.end !== 'number') {
+			throw new Error(`Invalid end: ${String(options.end)}. It must be a number.`);
+		}
+
+		if (options.highWaterMark !== undefined && typeof options.highWaterMark !== 'number') {
+			throw new Error(`Invalid highWaterMark: ${String(options.highWaterMark)}. It must be a number.`);
 		}
 	}
 
@@ -356,14 +384,13 @@ export default class ReadStream extends EventEmitter {
 
 		this.stream.on('data', (chunk: Buffer | string) => {
 			if (this.isFlowing) {
-				void this.executeHandlers('data', chunk);
+				this.emit('data', chunk);
 			}
 		});
 
 		this.stream.on('end', () => {
-			this.executeHandlers('end')
-				.then(() => this.close())
-				.catch(() => this.close());
+			this.emit('end');
+			this.close().catch(() => {});
 		});
 
 		this.stream.on('error', handleStreamError);
@@ -423,36 +450,6 @@ export default class ReadStream extends EventEmitter {
 
 			this.stream?.once('error', onError);
 		});
-	}
-
-	/**
-	 * Executes all handlers for the specified event.
-	 *
-	 * @param event - The type of event whose handlers need to be executed.
-	 * @param arg - The argument that will be passed to the handlers.
-	 */
-	private async executeHandlers<K extends IReadStreanEventType>(
-		event: K,
-		arg?: Parameters<IReadStreamEventHandlers[K]>[0],
-	): Promise<void> {
-		if (this.handlers[event].length === 0) {
-			if (this.debug) {
-				this.log(`No handlers registered for event "${event}".`);
-			}
-			return;
-		}
-
-		this.log(`Executing handlers for event "${event}".`);
-
-		await Promise.all(
-			this.handlers[event].map(async (handler) => {
-				try {
-					await handler(arg as (string | Buffer) & Error);
-				} catch (err) {
-					this.logError(`Handler for event "${event}" failed`, err);
-				}
-			}),
-		);
 	}
 
 	/**

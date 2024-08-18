@@ -1,4 +1,47 @@
-//#region Types
+//#region Imports
+import * as fs from 'fs';
+//#endregion
+
+/**
+ * Extracts the type of the argument at the specified index `I` from the function type `T`.
+ *
+ * @template T - The type of the function from which to extract the argument type.
+ * @template I - The index of the argument to extract (0-based).
+ *
+ * @example
+ * type FirstArg = TArgumentAtIndex<(a: string, b: number) => void, 0>; // string
+ * type SecondArg = TArgumentAtIndex<(a: string, b: number) => void, 1>; // number
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TArgumentAtIndex<T extends (...args: any[]) => any, I extends number> = Parameters<T>[I];
+
+/**
+ * The options that can be passed to `fs.createWriteStream`.
+ *
+ * This type represents the second argument to the `fs.createWriteStream` function, which
+ * defines options such as encoding, flags, and other stream settings.
+ *
+ * @see https://nodejs.org/api/fs.html#fs_fs_createwritestream_path_options
+ *
+ * @example
+ * const options: WriteStreamOptions = { flags: 'a', encoding: 'utf8' };
+ * const stream = fs.createWriteStream('file.txt', options);
+ */
+export type IWriteStreamOptions = TArgumentAtIndex<typeof fs.createWriteStream, 1>;
+
+/**
+ * The options that can be passed to `fs.createReadStream`.
+ *
+ * This type represents the second argument to the `fs.createReadStream` function, which
+ * defines options such as encoding, flags, start, end, and other stream settings.
+ *
+ * @see https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options
+ *
+ * @example
+ * const options: ReadStreamOptions = { start: 0, end: 100, encoding: 'utf8' };
+ * const stream = fs.createReadStream('file.txt', options);
+ */
+export type IReadStreamOptions = TArgumentAtIndex<typeof fs.createReadStream, 1>;
 
 /**
  * Possible flags for file mode operations.
@@ -63,16 +106,6 @@ export interface IDirectoryOptions {
 	mode?: number;
 }
 
-//#region Types
-
-/**
- * Types of events that can be emitted by ReadStream.
- *
- * @typedef {'data' | 'end' | 'error' | 'close' | 'pause' | 'resume'} IReadStreanEventType
- * @description Events that can be emitted by a ReadStream, corresponding to different stages and actions during the stream's lifecycle.
- */
-export type IReadStreanEventType = 'data' | 'end' | 'error' | 'close' | 'pause' | 'resume';
-
 /**
  * Interface representing the events emitted by ReadStream.
  *
@@ -93,28 +126,6 @@ export interface IReadStreamEvents {
 	pause: void;
 	resume: void;
 }
-
-/**
- * Interface for handling events emitted by ReadStream.
- *
- * @typedef {Object} IReadStreamEventHandlers
- * @property {(chunk: Buffer | string) => void | Promise<void>} data - Handles data event.
- * @property {() => void | Promise<void>} end - Handles end event.
- * @property {(err: Error) => void | Promise<void>} error - Handles error event.
- * @property {() => void | Promise<void>} close - Handles close event.
- * @property {() => void | Promise<void>} pause - Handles pause event.
- * @property {() => void | Promise<void>} resume - Handles resume event.
- * @description Describes the event handler functions for each type of event a ReadStream can emit.
- */
-export type IReadStreamEventHandlers = {
-	data: (chunk: Buffer | string) => void | Promise<void>;
-	end: () => void | Promise<void>;
-	error: (err: Error) => void | Promise<void>;
-	close: () => void | Promise<void>;
-	pause: () => void | Promise<void>;
-	resume: () => void | Promise<void>;
-};
-//#endregion
 
 /**
  * Interface representing the events emitted by WriteStream.
